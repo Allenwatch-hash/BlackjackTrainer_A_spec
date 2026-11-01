@@ -5,6 +5,11 @@ import type { Card, Rank, Suit } from "../game/shoe";
 import App from "./App";
 
 describe("drill interface", () => {
+  it("keeps the home link within the hosted app path", () => {
+    render(<App />);
+    expect(screen.getByRole("link", { name: "Blackjack Trainer home" })).toHaveAttribute("href", "./");
+  });
+
   it("opens and closes the cheat sheet without replacing the current hand", () => {
     render(<App />);
     const hand = screen.getByLabelText("Current hand");

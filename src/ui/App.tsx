@@ -157,7 +157,7 @@ export default function App() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <a aria-label="Blackjack Trainer home" className="brand" href="/">
+        <a aria-label="Blackjack Trainer home" className="brand" href="./">
           <span aria-hidden="true" className="brand-mark">B</span>
           <span>BLACKJACK <b>TRAINER</b></span>
         </a>
