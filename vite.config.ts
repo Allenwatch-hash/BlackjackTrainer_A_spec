@@ -6,6 +6,7 @@ export default defineConfig({
   base: process.env.GITHUB_ACTIONS === "true" ? "/BlackjackTrainer_A_spec/" : "/",
   plugins: [react(), tailwindcss()],
   test: {
+    css: true,
     environment: "jsdom",
     setupFiles: "./src/test/setup.ts",
   },

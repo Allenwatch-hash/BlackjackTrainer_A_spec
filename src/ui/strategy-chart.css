@@ -1,0 +1,124 @@
+.sheet-panel {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.strategy-tables {
+  width: 100%;
+}
+
+.strategy-block {
+  margin-bottom: 24px;
+}
+
+.strategy-block h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: 18px;
+}
+
+.strategy-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: clamp(10px, 3.4vw, 16px);
+  text-align: center;
+}
+
+.strategy-table th, .strategy-table td {
+  padding: 9px 1px;
+  border: 1px solid #fff;
+}
+
+.strategy-table th:first-child {
+  width: 15%;
+}
+
+.strategy-table thead th, .strategy-table tbody th {
+  background: #000;
+  color: #fff;
+  font-weight: 750;
+}
+
+.strategy-table td {
+  background: #000;
+  color: #fff;
+  font-weight: 750;
+}
+
+.strategy-table td.action-h, .strategy-table td.action-n {
+  background: #000;
+  color: #fff;
+}
+
+.strategy-table td.action-s {
+  background: #c9b8ff;
+  color: #000;
+}
+
+.strategy-table td.action-d, .strategy-table td.action-y, .strategy-table td.action-sur {
+  background: #ff7a00;
+  color: #000;
+}
+
+.strategy-table td.action-ds, .strategy-table td.action-y-n {
+  border: 2px solid #ff7a00;
+  background: #fff;
+  color: #000;
+}
+
+.strategy-table td.action-blank {
+  background: #000;
+  color: #fff;
+}
+
+.strategy-table td.highlight-cell {
+  position: relative;
+  z-index: 1;
+  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 4px #ff7a00;
+}
+
+.keyline {
+  margin: 8px 0 0;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.keyline b {
+  margin-left: 8px;
+  color: #c9b8ff;
+}
+
+.keyline b:first-child {
+  margin-left: 0;
+}
+
+.insurance-note {
+  margin: 16px 0 0;
+  padding: 12px;
+  border: 2px solid #ff7a00;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.insurance-note strong {
+  color: #ff7a00;
+}
+
+@media (max-width: 620px) {
+  .strategy-block {
+    margin-bottom: 28px;
+  }
+
+  .strategy-table th, .strategy-table td {
+    padding: 8px 1px;
+  }
+
+  .keyline {
+    max-width: 600px;
+  }
+}

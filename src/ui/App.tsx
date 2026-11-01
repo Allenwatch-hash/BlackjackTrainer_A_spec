@@ -36,6 +36,11 @@ function moveText(action: ChartAction | "-"): string {
   return action;
 }
 
+function actionClass(action: ChartAction | "-"): string {
+  if (action === "-") return "action-blank";
+  return `action-${action.toLowerCase().replace("/", "-")}`;
+}
+
 const sectionTitles: Record<ChartSection, string> = {
   hard: "Hard totals",
   soft: "Soft totals",
@@ -66,37 +71,41 @@ function CheatSheet({
           {sections.map((section) => (
             <div className="strategy-block" key={section}>
               <h3>{sectionTitles[section]}</h3>
-              <div className="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">Hand</th>
-                      {dealerColumns.map((dealer) => <th key={dealer} scope="col">{dealer}</th>)}
+              <table className="strategy-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Hand</th>
+                    {dealerColumns.map((dealer) => <th key={dealer} scope="col">{dealer}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(basicStrategy[section]).map(([row, actions]) => (
+                    <tr key={row}>
+                      <th scope="row">{row}</th>
+                      {actions.map((action, index) => {
+                        const isHighlighted = highlighted?.section === section
+                          && highlighted.row === row
+                          && highlighted.dealer === dealerColumns[index];
+                        return (
+                          <td
+                            aria-label={`${sectionTitles[section]} ${row} against ${dealerColumns[index]}: ${moveText(action)}`}
+                            className={`${actionClass(action)}${isHighlighted ? " highlight-cell" : ""}`}
+                            data-highlighted={isHighlighted || undefined}
+                            key={`${row}-${index}`}
+                          >
+                            <span>{moveText(action)}</span>
+                          </td>
+                        );
+                      })}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(basicStrategy[section]).map(([row, actions]) => (
-                      <tr key={row}>
-                        <th scope="row">{row}</th>
-                        {actions.map((action, index) => {
-                          const isHighlighted = highlighted?.section === section
-                            && highlighted.row === row
-                            && highlighted.dealer === dealerColumns[index];
-                          return (
-                            <td className={isHighlighted ? "highlight-cell" : ""} key={`${row}-${index}`}>
-                              <span>{moveText(action)}</span>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ))}
         </div>
         <p className="keyline"><b>H</b> Hit <b>S</b> Stand <b>D</b> Double or hit <b>Ds</b> Double or stand <b>Y</b> Split <b>N</b> Don’t split <b>Y/N</b> Split only with DAS <b>SUR</b> Surrender</p>
+        <p className="insurance-note"><strong>INSURANCE / EVEN MONEY</strong> DON'T TAKE</p>
       </section>
     </div>
   );
