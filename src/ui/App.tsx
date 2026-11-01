@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { basicStrategy, dealerColumns, type ChartAction, type ChartSection } from "../data/basicStrategy";
 import { dealQuestion, type DrillQuestion } from "../game/drill";
 import { answerLabel, feedbackReason, type Move } from "../game/strategy";
 import { createShoe, type Card, type Shoe } from "../game/shoe";
+import { getCheatSheetFit, MIN_CHEAT_SHEET_SCALE, type CheatSheetFit } from "./cheatSheetFit";
 
 const moveChoices: Move[] = ["hit", "stand", "double", "split", "surrender"];
 
@@ -56,56 +57,125 @@ function CheatSheet({
   onClose: () => void;
 }) {
   const sections: ChartSection[] = ["hard", "soft", "pairs", "surrender"];
+  const panelRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState<CheatSheetFit>({ mode: "fit", scale: 1 });
+
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    const content = contentRef.current;
+    if (!panel || !content) return;
+    const sheetPanel = panel;
+    const sheetContent = content;
+
+    function measureFit() {
+      const previousZoom = sheetContent.style.zoom;
+      sheetContent.style.zoom = "1";
+      const panelStyle = getComputedStyle(sheetPanel);
+      const availableWidth = sheetPanel.clientWidth
+        - parseFloat(panelStyle.paddingLeft)
+        - parseFloat(panelStyle.paddingRight);
+      const availableHeight = sheetPanel.clientHeight
+        - parseFloat(panelStyle.paddingTop)
+        - parseFloat(panelStyle.paddingBottom);
+      let nextFit = getCheatSheetFit(
+        sheetContent.scrollWidth,
+        sheetContent.scrollHeight,
+        availableWidth,
+        availableHeight,
+      );
+      if (nextFit.mode === "fit") {
+        let scale = nextFit.scale;
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          sheetContent.style.zoom = String(scale);
+          const fittedContent = sheetContent.getBoundingClientRect();
+          if (fittedContent.width <= 0 || fittedContent.height <= 0) break;
+          const correction = Math.min(
+            availableWidth / fittedContent.width,
+            availableHeight / fittedContent.height,
+          );
+          if (correction >= 1) break;
+          scale *= correction;
+          if (scale < MIN_CHEAT_SHEET_SCALE) {
+            nextFit = { mode: "scroll", scale: MIN_CHEAT_SHEET_SCALE };
+            break;
+          }
+          nextFit = { mode: "fit", scale };
+        }
+      }
+      sheetContent.style.zoom = previousZoom;
+      setFit((current) => current.mode === nextFit.mode && current.scale === nextFit.scale ? current : nextFit);
+    }
+
+    measureFit();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measureFit);
+    observer?.observe(sheetPanel);
+    window.addEventListener("resize", measureFit);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", measureFit);
+    };
+  }, []);
+
   return (
     <div className="overlay" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <section aria-label="Basic strategy cheat sheet" aria-modal="true" className="sheet-panel" role="dialog">
-        <div className="panel-heading">
-          <div>
-            <p className="eyebrow">REFERENCE</p>
-            <h2>Basic strategy</h2>
-          </div>
-          <button aria-label="Close cheat sheet" className="icon-button" onClick={onClose} type="button">×</button>
-        </div>
-        <p className="sheet-caption">Dealer upcard</p>
-        <div className="strategy-tables">
-          {sections.map((section) => (
-            <div className="strategy-block" key={section}>
-              <h3>{sectionTitles[section]}</h3>
-              <table className="strategy-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Hand</th>
-                    {dealerColumns.map((dealer) => <th key={dealer} scope="col">{dealer}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(basicStrategy[section]).map(([row, actions]) => (
-                    <tr key={row}>
-                      <th scope="row">{row}</th>
-                      {actions.map((action, index) => {
-                        const isHighlighted = highlighted?.section === section
-                          && highlighted.row === row
-                          && highlighted.dealer === dealerColumns[index];
-                        return (
-                          <td
-                            aria-label={`${sectionTitles[section]} ${row} against ${dealerColumns[index]}: ${moveText(action)}`}
-                            className={`${actionClass(action)}${isHighlighted ? " highlight-cell" : ""}`}
-                            data-highlighted={isHighlighted || undefined}
-                            key={`${row}-${index}`}
-                          >
-                            <span>{moveText(action)}</span>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      <section
+        aria-label="Basic strategy cheat sheet"
+        aria-modal="true"
+        className="sheet-panel"
+        data-fit-mode={fit.mode}
+        ref={panelRef}
+        role="dialog"
+      >
+        <div className="sheet-content" ref={contentRef} style={{ zoom: fit.scale }}>
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">REFERENCE</p>
+              <h2>Basic strategy</h2>
             </div>
-          ))}
+            <button aria-label="Close cheat sheet" className="icon-button" onClick={onClose} type="button">×</button>
+          </div>
+          <p className="sheet-caption">Dealer upcard</p>
+          <div className="strategy-tables">
+            {sections.map((section) => (
+              <div className="strategy-block" key={section}>
+                <h3>{sectionTitles[section]}</h3>
+                <table className="strategy-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Hand</th>
+                      {dealerColumns.map((dealer) => <th key={dealer} scope="col">{dealer}</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(basicStrategy[section]).map(([row, actions]) => (
+                      <tr key={row}>
+                        <th scope="row">{row}</th>
+                        {actions.map((action, index) => {
+                          const isHighlighted = highlighted?.section === section
+                            && highlighted.row === row
+                            && highlighted.dealer === dealerColumns[index];
+                          return (
+                            <td
+                              aria-label={`${sectionTitles[section]} ${row} against ${dealerColumns[index]}: ${moveText(action)}`}
+                              className={`${actionClass(action)}${isHighlighted ? " highlight-cell" : ""}`}
+                              data-highlighted={isHighlighted || undefined}
+                              key={`${row}-${index}`}
+                            >
+                              <span>{moveText(action)}</span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+          <p className="keyline"><b>H</b> Hit <b>S</b> Stand <b>D</b> Double or hit <b>Ds</b> Double or stand <b>Y</b> Split <b>N</b> Don’t split <b>Y/N</b> Split only with DAS <b>SUR</b> Surrender</p>
+          <p className="insurance-note"><strong>INSURANCE / EVEN MONEY</strong> DON'T TAKE</p>
         </div>
-        <p className="keyline"><b>H</b> Hit <b>S</b> Stand <b>D</b> Double or hit <b>Ds</b> Double or stand <b>Y</b> Split <b>N</b> Don’t split <b>Y/N</b> Split only with DAS <b>SUR</b> Surrender</p>
-        <p className="insurance-note"><strong>INSURANCE / EVEN MONEY</strong> DON'T TAKE</p>
       </section>
     </div>
   );

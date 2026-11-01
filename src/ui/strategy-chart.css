@@ -1,6 +1,14 @@
 .sheet-panel {
   overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.sheet-panel[data-fit-mode="scroll"] {
   overflow-y: auto;
+}
+
+.sheet-content {
+  width: 100%;
 }
 
 .strategy-tables {
@@ -8,13 +16,13 @@
 }
 
 .strategy-block {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .strategy-block h3 {
-  margin: 0 0 10px;
+  margin: 0 0 5px;
   color: #fff;
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .strategy-table {
@@ -22,12 +30,12 @@
   min-width: 0;
   table-layout: fixed;
   border-collapse: collapse;
-  font-size: clamp(10px, 3.4vw, 16px);
+  font-size: clamp(10px, 0.8vw, 12px);
   text-align: center;
 }
 
 .strategy-table th, .strategy-table td {
-  padding: 9px 1px;
+  padding: 3px 1px;
   border: 1px solid #fff;
 }
 
@@ -80,10 +88,10 @@
 }
 
 .keyline {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: #fff;
-  font-size: 13px;
-  line-height: 1.9;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .keyline b {
@@ -96,11 +104,11 @@
 }
 
 .insurance-note {
-  margin: 16px 0 0;
-  padding: 12px;
+  margin: 8px 0 0;
+  padding: 8px;
   border: 2px solid #ff7a00;
   color: #fff;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 750;
   text-align: center;
 }
@@ -111,14 +119,24 @@
 
 @media (max-width: 620px) {
   .strategy-block {
-    margin-bottom: 28px;
+    margin-bottom: 14px;
+  }
+
+  .strategy-table {
+    font-size: clamp(10px, 3.4vw, 13px);
   }
 
   .strategy-table th, .strategy-table td {
-    padding: 8px 1px;
+    padding: 3px 1px;
   }
 
   .keyline {
     max-width: 600px;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .insurance-note {
+    font-size: 12px;
   }
 }

@@ -28,7 +28,7 @@ describe("drill interface", () => {
     ]);
     expect(dialog.querySelector(".table-scroll")).not.toBeInTheDocument();
     expect(getComputedStyle(dialog).overflowX).toBe("hidden");
-    expect(getComputedStyle(dialog).overflowY).toBe("auto");
+    expect(getComputedStyle(dialog).overflowY).toBe("hidden");
     for (const table of within(dialog).getAllByRole("table")) {
       expect(getComputedStyle(table).width).toBe("100%");
       expect(getComputedStyle(table).minWidth).toBe("0");
