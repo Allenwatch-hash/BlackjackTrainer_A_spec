@@ -1,0 +1,19 @@
+{
+  "name": "Blackjack Trainer",
+  "short_name": "Blackjack",
+  "description": "A focused blackjack basic strategy drill.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090909",
+  "theme_color": "#090909",
+  "icons": [
+    {
+      "src": "./blackjack-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
