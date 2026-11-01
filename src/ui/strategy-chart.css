@@ -84,7 +84,9 @@
 .strategy-table td.highlight-cell {
   position: relative;
   z-index: 1;
-  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 4px #ff7a00;
+  border: 3px solid #000;
+  background: #ffeb3b;
+  color: #000;
 }
 
 .keyline {

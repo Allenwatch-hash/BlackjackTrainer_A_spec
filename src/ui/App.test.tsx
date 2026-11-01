@@ -67,6 +67,33 @@ describe("drill interface", () => {
     }
   });
 
+  it("uses the yellow highlight over every chart action color", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Open cheat sheet" }));
+    const dialog = screen.getByRole("dialog", { name: "Basic strategy cheat sheet" });
+    const actionClasses = [
+      "action-h",
+      "action-s",
+      "action-d",
+      "action-ds",
+      "action-y",
+      "action-n",
+      "action-y-n",
+      "action-sur",
+    ];
+
+    for (const actionClass of actionClasses) {
+      const cell = dialog.querySelector(`td.${actionClass}`);
+      expect(cell).not.toBeNull();
+      cell!.classList.add("highlight-cell");
+      const styles = getComputedStyle(cell!);
+      expect(styles.backgroundColor, actionClass).toBe("rgb(255, 235, 59)");
+      expect(styles.color, actionClass).toBe("rgb(0, 0, 0)");
+      expect(styles.borderTopWidth, actionClass).toBe("3px");
+      expect(styles.borderTopColor, actionClass).toBe("rgb(0, 0, 0)");
+    }
+  });
+
   it("keeps the Tips drawer empty", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: /Tips/ }));
