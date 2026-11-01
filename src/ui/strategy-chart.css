@@ -44,7 +44,7 @@
 }
 
 .strategy-table thead th, .strategy-table tbody th {
-  background: #000;
+  background: #333;
   color: #fff;
   font-weight: 750;
 }

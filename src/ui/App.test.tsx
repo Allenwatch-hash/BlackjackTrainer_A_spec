@@ -41,6 +41,25 @@ describe("drill interface", () => {
     expect(screen.getByLabelText("Current hand").textContent).toBe(initialCards);
   });
 
+  it("uses dark grey headers and label cells on all four charts", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Open cheat sheet" }));
+    const dialog = screen.getByRole("dialog", { name: "Basic strategy cheat sheet" });
+    const tables = within(dialog).getAllByRole("table");
+
+    expect(tables).toHaveLength(4);
+    for (const table of tables) {
+      for (const header of within(table).getAllByRole("columnheader")) {
+        expect(getComputedStyle(header).backgroundColor).toBe("rgb(51, 51, 51)");
+        expect(getComputedStyle(header).color).toBe("rgb(255, 255, 255)");
+      }
+      for (const label of within(table).getAllByRole("rowheader")) {
+        expect(getComputedStyle(label).backgroundColor).toBe("rgb(51, 51, 51)");
+        expect(getComputedStyle(label).color).toBe("rgb(255, 255, 255)");
+      }
+    }
+  });
+
   it("uses the approved v2 action colors", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Open cheat sheet" }));
